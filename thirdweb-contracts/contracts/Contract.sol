@@ -3,22 +3,26 @@ pragma solidity ^0.8.9;
 
 contract RentingContract {
 
+    uint public numberOfListing = 0;
+
     struct User {
         uint256 reviews;
         address[] reviewers;
         uint256[] scores;
-        uint256 wallet;
+        uint256 balance;
+        uint256 hold;
     }
 
     struct Listing { 
         address owner;
-        uint256 itemId;
+        address borrower;
         uint256 price;
         uint256 deposit;
         uint256 duration;
         uint256 startDate;
         uint256 endDate;
         bool isRented;
+        bool isReturning;
         bool isActive;
         address[] history;
     } 
@@ -26,82 +30,105 @@ contract RentingContract {
     mapping(address => User) public users;
     mapping(uint256 => Listing) public listings;
 
-    function createListing(uint256 _itemId, uint256 _price, uint256 _deposit, uint256 _duration) public {
-        listings[_itemId].owner = msg.sender;
-        listings[_itemId].itemId = _itemId;
-        listings[_itemId].price = _price;
-        listings[_itemId].deposit = _deposit;
-        listings[_itemId].duration = _duration;
-        listings[_itemId].isActive = true;
+    receive() external payable {
+        users[msg.sender].balance += msg.value;
     }
 
-    function rent(uint256 _itemId) public payable{
-        require(msg.sender != listings[_itemId].owner, "You can't rent your own item");
-        require(users[msg.sender].wallet >= (listings[_itemId].price + listings[_itemId].deposit), "Insufficient funds");
-        require(!listings[_itemId].isRented, "The contract is already rented");
-        listings[_itemId].history.push(msg.sender);
-        listings[_itemId].isRented = true;
-        listings[_itemId].startDate = block.timestamp;
-        listings[_itemId].endDate = listings[_itemId].startDate + listings[_itemId].duration;
-        users[msg.sender].wallet -= (listings[_itemId].price + listings[_itemId].deposit);
+    function getUserBalance() public view returns(uint256){
+        return users[msg.sender].balance;
     }
 
-    function deleteListing(uint256 _itemId) public {
-        require(msg.sender == listings[_itemId].owner, "Only the owner can delete the listing");
-        require(!listings[_itemId].isRented, "The contract is already rented");
-        listings[_itemId].isActive = false;
+    function createListing(uint256 _price, uint256 _deposit, uint256 _duration) public returns(uint256) {
+        require(users[msg.sender].balance>_deposit/2,"Insufficient funds");
+        Listing storage listing = listings[numberOfListing];
+
+        listing.owner = msg.sender;
+        listing.price = _price;
+        listing.deposit = _deposit;
+        listing.duration = _duration;
+        listing.startDate = block.timestamp;
+        listing.endDate = block.timestamp;
+        listing.isActive = true;
+        listing.isRented = false;
+        listing.isReturning = false;
+        listing.isActive = true;
+
+        numberOfListing++;
+        users[msg.sender].balance -= _deposit/2;
+        users[msg.sender].hold += _deposit/2;
+
+        return numberOfListing - 1;
     }
 
-    function terminate(uint256 _itemId) public {
-        require(msg.sender == listings[_itemId].owner, "Only the owner can terminate the contract");
-        require(listings[_itemId].isRented, "The contract is not rented");
-        require(block.timestamp >= listings[_itemId].endDate, "The contract is not finished yet");
-        users[msg.sender].wallet += (listings[_itemId].price + listings[_itemId].deposit);
-        listings[_itemId].isActive = false;
-    }
-    
-    function deposit() public payable returns (uint){
-        uint balanceBefore = users[msg.sender].wallet;
-        users[msg.sender].wallet += msg.value;
-        require(users[msg.sender].wallet == balanceBefore + msg.value, "Deposit failed");
-        return users[msg.sender].wallet;
+    function getAllListings() public view returns(Listing[] memory){
+        Listing[] memory allListing = new Listing[](numberOfListing);
+        for(uint i = 0; i < numberOfListing; i++){
+            Listing storage item = listings[i];
+            allListing[i] = item;
+        }
+        return allListing;
     }
 
-    function withdraw(uint256 _amount) public payable {
-        require(users[msg.sender].wallet >= _amount, "Insufficient funds");
-        uint256 balanceBeforeTransfer = address(this).balance;
+    function rent(uint256 _listingId) public {
+        require(msg.sender != listings[_listingId].owner, "You can't rent your own item");
+        require(users[msg.sender].balance >= (listings[_listingId].price + listings[_listingId].deposit), "Insufficient funds");
+        require(!listings[_listingId].isRented, "The contract is already rented");
+        require(listings[_listingId].isActive, "The contract is not active");
+        listings[_listingId].borrower = msg.sender;
+        listings[_listingId].history.push(msg.sender);
+        listings[_listingId].isRented = true;
+        listings[_listingId].startDate = block.timestamp;
+        listings[_listingId].endDate = listings[_listingId].startDate + listings[_listingId].duration;
+        users[msg.sender].balance -= (listings[_listingId].price + listings[_listingId].deposit);
+    }
+
+    function deleteListing(uint256 _listingId) public {
+        require(msg.sender == listings[_listingId].owner, "Only the owner can delete the listing");
+        require(!listings[_listingId].isRented, "The Item is already rented");
+        require(listings[_listingId].endDate >= block.timestamp - 604800, "The Item must be inactivate for more than 1 week");
+        listings[_listingId].isActive = false;
+        users[msg.sender].balance += listings[_listingId].deposit/2;
+        users[msg.sender].hold -= listings[_listingId].deposit/2;
+    }
+
+    function deactivateListing(uint256 _listingId) public {
+        require(msg.sender == listings[_listingId].owner, "Only the owner can deactivate the listing");
+        require(!listings[_listingId].isRented, "The Item is already rented");
+        listings[_listingId].isActive = false;
+    }
+
+    function returnItem(uint256 _listingId) public {
+        require(msg.sender == listings[_listingId].borrower, "Only borrower can return");
+        require(listings[_listingId].isRented == false, "Only rented Item can be retuned");
+        listings[_listingId].isReturning = true;
+    }
+
+    function receivedItem(uint256 _listingId) public {
+        require(msg.sender == listings[_listingId].owner, "Only the owner can reciveItem");
+        require(listings[_listingId].isReturning = true, "Item cant be recived");
+        users[msg.sender].balance += listings[_listingId].price;
+        users[listings[_listingId].borrower].balance += listings[_listingId].deposit;
+        //clear listing data
+        listings[_listingId].startDate = block.timestamp;
+        listings[_listingId].endDate = block.timestamp;
+        listings[_listingId].isRented = false;
+        listings[_listingId].isReturning = false;
+    }
+
+    //not finished
+    function withdraw(uint256 _amount) public payable returns(uint256){
+        require(users[msg.sender].balance >= _amount, "Insufficient funds");
         (bool success,) = payable(msg.sender).call{value: _amount}("");
         require(success, "Transfer failed.");
-        uint256 balanceAfterTransfer = address(this).balance;
-        require(balanceAfterTransfer == balanceBeforeTransfer - _amount, "Transfer amount mismatch.");
-        users[msg.sender].wallet -= _amount;
+        users[msg.sender].balance -= _amount;
+        return users[msg.sender].balance;
     }
 
-
-    
-    
-    // function rent() public payable {
-    //     require(msg.value == price + deposit, "You need to pay the price + deposit");
-    //     require(!isRented, "The contract is already rented");
-    //     renter = msg.sender;
-    //     isRented = true;
-    //     startDate = block.timestamp;
-    //     endDate = startDate + duration;
-    // }
-    
-    // function terminate() public {
-    //     require(msg.sender == owner, "Only the owner can terminate the contract");
-    //     require(isRented, "The contract is not rented");
-    //     require(block.timestamp >= endDate, "The contract is not finished yet");
-    //     payable(owner).transfer(price + deposit);
-    //     isRented = false;
-    // }
-    
-    // function withdraw() public {
-    //     require(msg.sender == renter, "Only the renter can withdraw the deposit");
-    //     require(isRented, "The contract is not rented");
-    //     require(block.timestamp >= endDate, "The contract is not finished yet");
-    //     payable(renter).transfer(deposit);
-    //     isRented = false;
+    // function terminate(uint256 _itemId) public {
+    //     require(msg.sender == listings[_itemId].owner, "Only the owner can terminate the contract");
+    //     require(listings[_itemId].isRented, "The contract is not rented");
+    //     require(block.timestamp >= listings[_itemId].endDate, "The contract is not finished yet");
+    //     users[msg.sender].wallet += (listings[_itemId].price + listings[_itemId].deposit);
+    //     listings[_itemId].isActive = false;
     // }
 }
