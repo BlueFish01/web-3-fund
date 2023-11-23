@@ -4,6 +4,11 @@ pragma solidity ^0.8.9;
 contract RentingContract {
 
     uint public numberOfListing = 0;
+    address public owner;
+
+    contract(){
+        owner = msg.sender;
+    }
 
     struct User {
         uint256 reviews;
@@ -108,7 +113,7 @@ contract RentingContract {
         require(listings[_listingId].isReturning = true, "Item cant be recived");
         users[msg.sender].balance += listings[_listingId].price;
         users[listings[_listingId].borrower].balance += listings[_listingId].deposit;
-        //clear listing data
+        
         listings[_listingId].startDate = block.timestamp;
         listings[_listingId].endDate = block.timestamp;
         listings[_listingId].isRented = false;
@@ -124,11 +129,45 @@ contract RentingContract {
         return users[msg.sender].balance;
     }
 
-    // function terminate(uint256 _itemId) public {
-    //     require(msg.sender == listings[_itemId].owner, "Only the owner can terminate the contract");
-    //     require(listings[_itemId].isRented, "The contract is not rented");
-    //     require(block.timestamp >= listings[_itemId].endDate, "The contract is not finished yet");
-    //     users[msg.sender].wallet += (listings[_itemId].price + listings[_itemId].deposit);
-    //     listings[_itemId].isActive = false;
-    // }
+    function reportNotReturnItem(uint256 _listingId) public{
+        require(msg.sender == listings[_listingId].owner, "Only the owner can report");
+        require(listings[_listingId].isRented == true, "Only rented items can be reported");
+        require(listings[_listingId].endDate < block.timestamp, "Only expired renting contract can be reported")
+        require(listing[_listingId].isReturning == false), "Only non-returned item can be reported");
+        //called by listing owner
+        
+    }
+
+    function reportNotRecivedItem() public{
+        //called by Borrower when return item but no respone from listing owner
+    }
+
+    function reportNotGetRentedItem() public{
+        //called by Borrower
+    }
+    
+    function challenge() public{}
+
+    function resolveTicket() public{
+    }
+
+    function openTicket() private{}
+
+    struct Ticket {
+        uint256 listing_id;
+        address reporter;
+        address litigant;
+        string reporter_evidence;
+        string litigant_evidence;
+        bool isChallenge;
+        uint256 reported_date;
+        address winner;
+        address loser;
+        uint256 price;
+        uint256 challenge_price;
+    }
+
+    mapping(uint256 => Ticket) public tickets
+
 }
+
