@@ -1,10 +1,16 @@
-import { Box } from '@mui/material';
+import { Box, Stack } from '@mui/material';
+import ItemCard from '../components/ItemCard';
+import DetailModal from '../components/DetailModal';
+import { useState } from 'react';
 
 function Homepage() {
+
+  const [openModal, setOpenModal] = useState(false);
   return (
-    <Box bgcolor={'white'} flex={1} flexGrow={1} display={'flex'}>
-      <h1>Homepage</h1>
-    </Box>
+    <Stack direction={'row'} spacing={4} >
+        <ItemCard onClick={()=>setOpenModal(true)}/>
+      <DetailModal open={openModal} onClose={()=>{setOpenModal(false)}}/>
+    </Stack>
   )
 }
 

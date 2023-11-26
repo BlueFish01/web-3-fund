@@ -19,7 +19,7 @@ function Nevbar() {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Typography textAlign={"center"} color={"white"} variant={"h3"}>
+        <Typography color={"white"} variant={"h3"}>
           LOGO
         </Typography>
         <Stack direction={"row"} spacing={2}>
