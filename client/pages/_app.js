@@ -5,6 +5,9 @@ import '@fontsource/fira-sans/400.css';
 import '@fontsource/fira-sans/500.css';
 import '@fontsource/fira-sans/700.css';
 import '@fontsource/fira-sans/800.css';
+import Nevbar from '../components/Nevbar';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../styles/mui_theme';
 
 
 // This is the chain your dApp will work on.
@@ -18,7 +21,10 @@ function MyApp({ Component, pageProps }) {
 			activeChain={activeChain}
 			clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
 		>
-			<Component {...pageProps} />
+			<ThemeProvider theme={theme}>
+				<Nevbar />
+				<Component {...pageProps} />
+			</ThemeProvider>
 		</ThirdwebProvider>
 	);
 }
