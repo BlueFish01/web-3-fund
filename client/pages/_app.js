@@ -7,6 +7,7 @@ import '@fontsource/fira-sans/700.css';
 import '@fontsource/fira-sans/800.css';
 import Nevbar from '../components/Nevbar';
 import { ThemeProvider } from '@mui/material/styles';
+import { Box } from '@mui/material';
 import theme from '../styles/mui_theme';
 
 
@@ -22,8 +23,17 @@ function MyApp({ Component, pageProps }) {
 			clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
 		>
 			<ThemeProvider theme={theme}>
-				<Nevbar />
-				<Component {...pageProps} />
+			<Nevbar />
+				<Box 
+				bgcolor={'white'} 
+				flex={1} 
+				flexGrow={1} 
+				display={'flex'}
+				sx={{position: 'absolute', left:0, right:0, top:"80px", bottom:0, alignItems: 'center', justifyContent: 'center'}}
+				>
+					
+					<Component {...pageProps} />
+				</Box>
 			</ThemeProvider>
 		</ThirdwebProvider>
 	);
