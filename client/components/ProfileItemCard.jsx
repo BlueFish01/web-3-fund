@@ -4,23 +4,27 @@ import { faArrowRightArrowLeft,faStopCircle, faExclamationCircle, faTrash, faPla
 
 function ProfileItemCard(props){
     // let status = props.itemStatus
-    let status = "active"  //status = "brrow", "report", "active", "inactive"
+    let status = "inactive"  //status = "brrow", "report", "active", "inactive"
     const cardStatus = {
         "borrow" : {
             icon: faArrowRightArrowLeft,
-            iconColor: "white"
+            iconColor: "white",
+            textColor: "#D85A5A"
         },
         "report" : {
             icon: faExclamationCircle,
-            iconColor: "#C85A5A"
+            iconColor: "#C85A5A",
+            textColor: "#C85A5A"
         },
         "active": {
             icon: faStopCircle,
-            iconColor: "white"
+            iconColor: "white",
+            textColor: "#93CFC6"
         },
         "inactive": {
             icon: faTrash,
-            iconColor: "white"
+            iconColor: "white",
+            textColor: "#9F9F9F"
         }
     }
     return (
@@ -37,7 +41,7 @@ function ProfileItemCard(props){
                     <Typography px={1} pt={1} color={"white"} variant={"h6"}>
                         iMacPro
                     </Typography>
-                    <Typography px={1} pb={1} color={"#D85A5A"} variant={"h6"}>
+                    <Typography px={1} pb={1} color={cardStatus[status].textColor} variant={"h6"}>
                         2 days
                     </Typography>
                 </Stack>
