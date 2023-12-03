@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, Button } from '@mui/material';
+import { Box, Stack, Typography, Button, Grid } from '@mui/material';
 import { COLORS } from './color';
 import Image from 'next/image';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,13 +14,22 @@ const liststatus = [
   {
     key: 1,
     status: "borrow"
-  },  {
+  },
+  {
     key: 1,
     status: "borrow"
   },
   {
     key: 2,
     status: "report"
+  },
+  {
+    key: 2,
+    status: "report"
+  },
+  {
+    key: 3,
+    status: "active"
   },
   {
     key: 3,
@@ -42,29 +51,31 @@ const listItemBorrow = borrowItems.map((borrowItem, i) => (
 ));
 
 
-const listItemReport = liststatus
-  .filter((item) => item.status === "report")
-  .map((reportItem,i) => 
+const reportItems = liststatus.filter((item) => item.status === "report")
+const reportCount = reportItems.length;
+const listItemReport = reportItems.map((reportItem,i) => (
     <Stack p={2}>
       <ProfileItemCard key={i} itemStatus={reportItem.status}/>
     </Stack>
-);
+));
 
-const listItemActive = liststatus
-  .filter((item) => item.status === "active")
-  .map((listingItem,i) => 
+const activeItems = liststatus.filter((item) => item.status === "active")
+const activeCount = activeItems.length;
+const listItemActive = activeItems.map((activeItem,i) => 
     <Stack p={2}>
-      <ProfileItemCard key={i} itemStatus={listingItem.status}/>
+      <ProfileItemCard key={i} itemStatus={activeItem.status}/>
     </Stack>
 );
 
-const listIteminActive = liststatus
-  .filter((item) => item.status === "inactive")
-  .map((listingItem,i) => 
+const inactiveItems = liststatus.filter((item) => item.status === "inactive")
+const inactiveCount = inactiveItems.length;
+const listItemInactive = inactiveItems.map((inactiveItem,i) => 
     <Stack p={2}>
-      <ProfileItemCard key={i} itemStatus={listingItem.status}/>
+      <ProfileItemCard key={i} itemStatus={inactiveItem.status}/>
     </Stack>
 );
+
+const ListingsCount = activeCount+inactiveCount;
 
 function Profile() {
     return (
@@ -88,14 +99,35 @@ function Profile() {
           </Stack>
         </Stack>
         <Box sx={{bgcolor: COLORS.purple, width:"764px", height:"686px", borderRadius:"15px", p:3, overflowY: "auto"}}>
-          {/* <ProfileItemCard/> */}
           <Typography fontSize={'24px'} color={COLORS.white}>Borrowing ({borrowCount})</Typography>
-          {listItemBorrow}
-          <Typography fontSize={'24px'} color={COLORS.white}>Report</Typography>
-          {listItemReport}
-          <Typography fontSize={'24px'} color={COLORS.white}>Listings</Typography>
-          {listItemActive}
-          {listIteminActive}
+          <Grid container spacing={2}>
+              {listItemBorrow.map((borrowItem, index) => (
+                <Grid key={index} item xs={6}> 
+                  {borrowItem}
+                </Grid>
+              ))}
+          </Grid>
+          <Typography fontSize={'24px'} color={COLORS.white}>Report ({reportCount})</Typography>
+          <Grid container spacing={2}>
+            {listItemReport.map((reportItem, index) => (
+              <Grid key={index} item xs={6}> 
+                {reportItem}
+              </Grid>
+            ))}
+          </Grid>
+          <Typography fontSize={'24px'} color={COLORS.white}>Listings ({ListingsCount})</Typography>
+          <Grid container spacing={2}>
+            {listItemActive.map((activeItem, index) => (
+              <Grid key={index} item xs={6}> 
+                {activeItem}
+              </Grid>
+            ))}
+            {listItemInactive.map((inactiveItem, index) => (
+              <Grid key={index} item xs={6}> 
+                {inactiveItem}
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       </Stack>
     )
