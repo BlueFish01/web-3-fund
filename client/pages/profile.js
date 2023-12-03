@@ -1,6 +1,10 @@
+import { Box, Stack, Typography } from '@mui/material';
+import Image from 'next/image';
+import Profile from '../components/Profile';
+
 function Profilepage() {
     return (
-      <h1>Profile page</h1>
+      <Profile/>
     )
   }
   
