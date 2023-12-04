@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, Button, Grid } from '@mui/material';
+import { Box, Stack, Typography, Button, Grid, Container} from '@mui/material';
 import { COLORS } from './color';
 import Image from 'next/image';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -79,7 +79,8 @@ const ListingsCount = activeCount+inactiveCount;
 
 function Profile() {
     return (
-      <Stack flexGrow={1} direction={'row'} justifyContent={'space-around'}>
+    <Container width={'100%'}>
+      <Stack flexGrow={1} direction={'row'} justifyContent={'space-between'}>
         <Stack direction={'column'} alignItems={'flex-start'}>
           <Image src='https://www.cryptonomist.gr/wp-content/uploads/2022/01/FIW6rBzWUAMUzq1.jpeg' width={279} height={279}></Image>
           <Stack flexGrow={1} alignItems={'flex-start'} justifyContent={'space-evenly'}>
@@ -98,9 +99,9 @@ function Profile() {
             <Button sx={{width: '279px', height: '52px', borderRadius: '15px', color: COLORS.white,bgcolor: COLORS.lightpurple, border:'3px', borderColor: '#C6A2F4'}}>Edit Profile</Button>
           </Stack>
         </Stack>
-        <Box sx={{bgcolor: COLORS.purple, width:"764px", height:"686px", borderRadius:"15px", p:3, overflowY: "auto"}}>
+        <Box sx={{bgcolor: COLORS.purple, width:"764px", height:"686px", borderRadius:"15px", p:2, overflowY: "auto"}}>
           <Typography fontSize={'24px'} color={COLORS.white}>Borrowing ({borrowCount})</Typography>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} pr={2}>
               {listItemBorrow.map((borrowItem, index) => (
                 <Grid key={index} item xs={6}> 
                   {borrowItem}
@@ -108,7 +109,7 @@ function Profile() {
               ))}
           </Grid>
           <Typography fontSize={'24px'} color={COLORS.white}>Report ({reportCount})</Typography>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} pr={2}>
             {listItemReport.map((reportItem, index) => (
               <Grid key={index} item xs={6}> 
                 {reportItem}
@@ -116,7 +117,7 @@ function Profile() {
             ))}
           </Grid>
           <Typography fontSize={'24px'} color={COLORS.white}>Listings ({ListingsCount})</Typography>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} pr={2}>
             {listItemActive.map((activeItem, index) => (
               <Grid key={index} item xs={6}> 
                 {activeItem}
@@ -130,6 +131,7 @@ function Profile() {
           </Grid>
         </Box>
       </Stack>
+    </Container>
     )
   }
   
