@@ -81,7 +81,7 @@ function Profile() {
     return (
     <Container width={'100%'}>
       <Stack flexGrow={1} direction={'row'} justifyContent={'space-between'}>
-        <Stack direction={'column'} alignItems={'flex-start'}>
+        <Stack direction={'column'} justifyContent={'space-between'}>
           <Image src='https://www.cryptonomist.gr/wp-content/uploads/2022/01/FIW6rBzWUAMUzq1.jpeg' width={279} height={279}></Image>
           <Stack flexGrow={1} alignItems={'flex-start'} justifyContent={'space-evenly'}>
             <Typography color={COLORS.gray} fontSize={'20px'} fontWeight={400}>x0622xxxxxxxxx</Typography>
@@ -99,9 +99,9 @@ function Profile() {
             <Button sx={{width: '279px', height: '52px', borderRadius: '15px', color: COLORS.white,bgcolor: COLORS.lightpurple, border:'3px', borderColor: '#C6A2F4'}}>Edit Profile</Button>
           </Stack>
         </Stack>
-        <Box sx={{bgcolor: COLORS.purple, width:"764px", height:"686px", borderRadius:"15px", p:2, overflowY: "auto"}}>
+        <Box sx={{bgcolor: COLORS.purple, width:"800px", height:"686px", borderRadius:"15px", p:2, overflowY: "auto"}}>
           <Typography fontSize={'24px'} color={COLORS.white}>Borrowing ({borrowCount})</Typography>
-          <Grid container spacing={2} pr={2}>
+          <Grid container spacing={2} pr={4}>
               {listItemBorrow.map((borrowItem, index) => (
                 <Grid key={index} item xs={6}> 
                   {borrowItem}
@@ -109,7 +109,7 @@ function Profile() {
               ))}
           </Grid>
           <Typography fontSize={'24px'} color={COLORS.white}>Report ({reportCount})</Typography>
-          <Grid container spacing={2} pr={2}>
+          <Grid container spacing={2} pr={4}>
             {listItemReport.map((reportItem, index) => (
               <Grid key={index} item xs={6}> 
                 {reportItem}
@@ -117,7 +117,7 @@ function Profile() {
             ))}
           </Grid>
           <Typography fontSize={'24px'} color={COLORS.white}>Listings ({ListingsCount})</Typography>
-          <Grid container spacing={2} pr={2}>
+          <Grid container spacing={2} pr={4}>
             {listItemActive.map((activeItem, index) => (
               <Grid key={index} item xs={6}> 
                 {activeItem}
