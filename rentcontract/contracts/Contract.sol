@@ -56,7 +56,7 @@ contract RentingContract {
         string memory _itemDescription, 
         string memory _itemPic
         ) public returns(uint256) {
-        require(users[msg.sender].balance>_deposit/2,"Insufficient funds");
+        require(users[msg.sender].balance>uint(_deposit)/2,"Insufficient funds");
         Listing storage listing = listings[numberOfListing];
 
         listing.listingId = numberOfListing;
@@ -76,8 +76,8 @@ contract RentingContract {
         listing.isDeleted = false;
 
         numberOfListing++;
-        users[msg.sender].balance -= _deposit/2;
-        users[msg.sender].hold += _deposit/2;
+        users[msg.sender].balance -= uint(_deposit)/2;
+        users[msg.sender].hold += uint(_deposit)/2;
 
         users[msg.sender].UserListing.push(numberOfListing - 1);
 
@@ -103,8 +103,8 @@ contract RentingContract {
         require(!listings[_listingId].isRented, "The Item is already rented");
         require(listings[_listingId].endDate >= block.timestamp - 604800, "The Item must be inactivate for more than 1 week");
         listings[_listingId].isDeleted = true;
-        users[msg.sender].balance += listings[_listingId].deposit/2;
-        users[msg.sender].hold -= listings[_listingId].deposit/2;
+        users[msg.sender].balance += uint(listings[_listingId].deposit)/2;
+        users[msg.sender].hold -= uint(listings[_listingId].deposit)/2;
     }
 
     function deactivateListing(uint256 _listingId) public {

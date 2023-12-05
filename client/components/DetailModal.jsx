@@ -10,6 +10,9 @@ import {
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { WeiToETH, msTodhm } from "../utils";
+import { Web3Button, darkTheme } from "@thirdweb-dev/react";
+import { COLORS } from "./color";
 
 const style = {
   position: "absolute",
@@ -25,6 +28,13 @@ const style = {
 };
 
 function DetailModal({ open, onClose, data }) {
+  const price = WeiToETH(data?.price);
+  const deposit = WeiToETH(data?.deposit);
+  const total = WeiToETH(data?.price.add(data?.deposit));
+
+  const ms = parseInt(data?.duration.toString());
+  const days = msTodhm(ms);
+
   return (
     <Modal open={open} onClose={() => {}}>
       <Box
@@ -37,10 +47,10 @@ function DetailModal({ open, onClose, data }) {
       >
         <Stack flexGrow={1} py={2}>
           <Typography variant="h4" px={3}>
-            Macbook pro 16
+            {data?.itemName}
           </Typography>
           <Image
-            src="https://media-cdn.bnn.in.th/150987/MacBook_Pro_16-in_Space_Grey_PDP_Image_Position-1__TH-square_medium.jpg"
+            src={data?.itemPic}
             width={580}
             height={310}
             style={{
@@ -50,20 +60,14 @@ function DetailModal({ open, onClose, data }) {
           />
           <Stack flexGrow={1} flex={1}>
             <Typography variant="body1" px={3}>
-              gfdsgjdfklsgjskl;dfgjsdfklgjsf
-              <br />
-              fgjklsdjfgkldjfgldjsfgjdfgklsd
-              <br />
-              gflsdkgjldfgjdfklgjdfsgkfdjgsf
-              <br />
-              jlgksdfkjgdfklgfkgkk
+              {data?.itemDescription}
             </Typography>
           </Stack>
           <Typography variant="subtitle" px={3} gutterBottom>
-            History : 10
+            History : {data?.history.length}
           </Typography>
           <Typography variant="subtitle" px={3}>
-            owner : x34320423904923402
+            owner : {data?.owner}
           </Typography>
         </Stack>
         <Divider orientation="vertical" flexItem bgcolor={"black"} />
@@ -89,36 +93,36 @@ function DetailModal({ open, onClose, data }) {
           </IconButton>
           <Stack direction={"column"} spacing={2} px={1}>
             <Stack direction={"row"} justifyContent={"space-between"}>
-              <Typography variant="h5">
-                price
-              </Typography>
-              <Stack direction={"column"} spacing={1}>
-                <Typography variant="h5" >
-                  1.5 ETH
-                </Typography>
-                <Typography variant="subtitle" >
-                  10 days
-                </Typography>
+              <Typography variant="h5">price</Typography>
+              <Stack direction={"column"} spacing={1} alignItems={"flex-end"}>
+                <Typography variant="h5">{price} ETH</Typography>
+                <Typography variant="subtitle">{days}</Typography>
               </Stack>
             </Stack>
             <Stack direction={"row"} justifyContent={"space-between"}>
-              <Typography variant="h5" >
-                deposit
-              </Typography>
-              <Typography variant="h5" >
-                1.5 ETH
-              </Typography>
+              <Typography variant="h5">deposit</Typography>
+              <Typography variant="h5">{deposit} ETH</Typography>
             </Stack>
             <Divider />
             <Stack direction={"row"} justifyContent={"space-between"}>
-              <Typography variant="h5" >
-                total
-              </Typography>
-              <Typography variant="h5" >
-                3.0 ETH
-              </Typography>
+              <Typography variant="h5">total</Typography>
+              <Typography variant="h5">{total} ETH</Typography>
             </Stack>
-            <Button variant={"contained"} onClick={onClose}>Rent</Button>
+            <Web3Button
+              contractAddress={process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}
+              theme={darkTheme({
+                fontFamily: "Inter, sans-serif",
+                colors: {
+                  modalBg: "#000000",
+                  accentText: 'rgb(128,208,145)',
+                  // ... etc
+                },
+              })}
+              action={(contract) => console.log("rent")} // Logic to execute when clicked
+              style={{ color: COLORS.white, background: COLORS.purple }}
+            >
+              Rent
+            </Web3Button>
           </Stack>
         </Stack>
       </Box>
