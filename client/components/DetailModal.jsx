@@ -58,7 +58,7 @@ function DetailModal({ open, onClose, data }) {
             }}
             alt="Picture of the Items"
           />
-          <Stack flexGrow={1} flex={1}>
+          <Stack flexGrow={1} flex={1} pt={1}>
             <Typography variant="body1" px={3}>
               {data?.itemDescription}
             </Typography>

@@ -13,7 +13,11 @@ function ItemCard({
   return (
     
     <CardActionArea 
-        sx={{borderRadius: '15px'}}
+        sx={{
+        borderRadius: '15px',
+        width:"320px",
+        height:"360px"
+        }}
         onClick={onClick}
     >
     <Box
@@ -33,6 +37,7 @@ function ItemCard({
         display={'flex'}
         justifyContent={'space-between'}
         spacing={1}
+        pt={1}
         >
             <Stack>
             <Image

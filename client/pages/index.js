@@ -1,4 +1,4 @@
-import { Box, Stack } from "@mui/material";
+import { Box, Stack, Grid } from "@mui/material";
 import ItemCard from "../components/ItemCard";
 import DetailModal from "../components/DetailModal";
 import { useEffect, useMemo, useState } from "react";
@@ -23,7 +23,9 @@ function Homepage() {
 
   const listing = useMemo(() => {
     return data?.map((item, key) => (
-      <ItemCard key={key} data={item} onClick={() => handleDetail(key)} />
+      <Grid item xs={4}>
+        <ItemCard key={key} data={item} onClick={() => handleDetail(key)} />
+      </Grid>
     ));
   }, [data, setOpenModal]);
 
@@ -33,8 +35,10 @@ function Homepage() {
   };
 
   return (
-    <Stack direction={"row"} spacing={4}>
-      {listing}
+    <Box display={"flex"} height={"85vh"} overflow={'scroll'} p={4}>
+      <Grid container spacing={1} rowSpacing={2} maxWidth={"1100px"}>
+        {listing}
+      </Grid>
       {detailData ? (
         <DetailModal
           open={openModal}
@@ -46,7 +50,7 @@ function Homepage() {
       ) : (
         <></>
       )}
-    </Stack>
+    </Box>
   );
 }
 
