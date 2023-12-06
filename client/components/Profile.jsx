@@ -15,6 +15,7 @@ import AddListingModal from "./AddListingModal";
 function Profile({
   data,
   listing,
+  borrowing,
 }) {
   const address = useAddress();
   const balance = WeiToETH(data?.balance);
@@ -68,6 +69,26 @@ function Profile({
       })
     }
   },[listing])
+
+  const BorrowListing = useMemo(()=>{
+    if(borrowing){
+      return borrowing.map((item)=>{
+          return(
+            <Grid key={item.listingId} item xs={6}>
+              <ProfileItemCard 
+                name={item.itemName}
+                isActive={item.isActive}
+                isRented={item.isRented}
+                isReturning={item.isReturning}
+                borrow={true}
+                endDate={item.endDate}
+              />
+            </Grid>
+          )
+      })
+    }
+  },[borrowing])
+  
   
 
 
@@ -175,17 +196,13 @@ function Profile({
           <Typography fontSize={"24px"} color={COLORS.white}>
             Borrowing
           </Typography>
-          <Grid container spacing={2} pr={2} minHeight={"50px"}>
-            {/* {listItemBorrow.map((borrowItem, index) => (
-              <Grid key={index} item xs={6}>
-                {borrowItem}
-              </Grid>
-            ))} */}
+          <Grid container spacing={2} p={2} minHeight={"50px"}>
+            {BorrowListing}
           </Grid>
           <Typography fontSize={"24px"} color={COLORS.white}>
             Reported
           </Typography>
-          <Grid container spacing={2} pr={2} minHeight={"50px"}>
+          <Grid container spacing={2} p={2} minHeight={"50px"}>
             {reportedListing}
           </Grid>
           <Typography fontSize={"24px"} color={COLORS.white}>

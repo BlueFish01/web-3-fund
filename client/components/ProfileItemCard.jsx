@@ -15,35 +15,43 @@ import {
     faPlay,
     faMoneyBillTransfer,
 } from "@fortawesome/free-solid-svg-icons";
+import {dayLeft} from "../utils"
 
 function ProfileItemCard({
     name,
     isActive,
     isRented,
     isReturning,
+    borrow,
+    endDate,
 }){
     //let status = props.itemStatus
     let status = '';
     if(isActive && !isRented && !isReturning){
         status = "active"
     }
-    // if(isActive==true&&isRented==true&&isReturning==false){
-    //     status = "rented"
-    // }
+    if(isActive==true&&isRented==true&&isReturning==false&&!borrow){
+        status = "rented"
+    }
 
-    // if(isActive==true&&isRented==true&&isReturning==true){
-    //     status = "returned"
-    // }
-    // if(isActive==false){
-    //     status = "inactive"
-    // }
+    if(isActive==true&&isRented==true&&isReturning==true){
+        status = "returned"
+    }
+    if(isActive==false){
+        status = "inactive"
+    }
+    if(borrow){
+        status = "borrow"
+    }
 
     const cardStatus = {
         "borrow" : {
+            status: endDate ? dayLeft(endDate) : '',
             key: 1,
             icon: faArrowRightArrowLeft,
             iconColor: "white",
-            textColor: "#D85A5A"
+            textColor: "#D85A5A",
+            onClickFn : ()=>{console.log("return")},
         },
         "report" : {
             key: 2,
@@ -55,9 +63,9 @@ function ProfileItemCard({
             status: "active",
             key: 3,
             icon: faStopCircle,
-            iconColor: "white",
+            iconColor: "#C85A5A",
             textColor: "#93CFC6",
-            onClickFn : ()=>{},
+            onClickFn : ()=>{console.log("deactivate")},
         },
         "inactive": {
             status: "inactive",
@@ -98,7 +106,7 @@ function ProfileItemCard({
                     <Typography px={1} pt={1} color={"white"} variant={"h6"}>
                         {name}
                     </Typography>
-                    <Typography px={1} pb={1} color={cardStatus[status]?.textColor} variant={"h6"}>
+                    <Typography px={1} pb={1} fontSize={borrow ? "14px" : "18px"} color={cardStatus[status]?.textColor} variant={"h6"}>
                         {cardStatus[status]?.status}
                     </Typography>
                 </Stack>
@@ -110,7 +118,9 @@ function ProfileItemCard({
                 </IconButton>
                 :null
                 }
-                <IconButton>
+                <IconButton
+                    onClick={cardStatus[status]?.onClickFn}
+                >
                     <FontAwesomeIcon 
                         icon={cardStatus[status]?.icon} size={"lg"} color={cardStatus[status]?.iconColor}
                     />

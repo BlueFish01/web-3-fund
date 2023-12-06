@@ -21,7 +21,7 @@ const activeChain = "localhost";
 function MyApp({ Component, pageProps }) {
   return (
     <ThirdwebProvider
-      supportedWallets={[metamaskWallet()]}
+      //supportedWallets={[metamaskWallet()]}
       activeChain={activeChain}
       clientId={process.env.NEXT_PUBLIC_TEMPLATE_CLIENT_ID}
     >

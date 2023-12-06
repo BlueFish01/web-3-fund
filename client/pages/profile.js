@@ -12,27 +12,34 @@ function Profilepage() {
   const { data:ProfileData, isLoading:profileLoading } = useContractRead(
     contract,
     "getUser",
-    []
+    [address]
   );
 
   const { data:UserListing, isLoading:listingLoading } = useContractRead(
     contract,
     "getUserListing",
-    []
+    [address]
+  );
+
+  const { data:UserBorrowing, isLoading:BorrowingLoading } = useContractRead(
+    contract,
+    "getCurrentRenting",
+    [address]
   );
 
   useEffect(() => {
-    console.log("data", UserListing);
+    console.log("dataUser ",address, UserListing,UserBorrowing);
   }, [UserListing]);
 
   const profilePage = useMemo(() => {
-    if(ProfileData && UserListing) {
+    if(ProfileData && UserListing && UserBorrowing) {
     return(
     <Profile 
       data={ProfileData}
       listing={UserListing}
+      borrowing={UserBorrowing}
     />)}
-  }, [ProfileData,UserListing]);
+  }, [ProfileData,UserListing,UserBorrowing]);
 
   
 

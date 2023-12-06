@@ -11,8 +11,9 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { WeiToETH, msTodhm } from "../utils";
-import { Web3Button, darkTheme } from "@thirdweb-dev/react";
+import { Web3Button, darkTheme, useContract, useContractWrite } from "@thirdweb-dev/react";
 import { COLORS } from "./color";
+
 
 const style = {
   position: "absolute",
@@ -28,12 +29,30 @@ const style = {
 };
 
 function DetailModal({ open, onClose, data }) {
+  const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS);
+    const { mutateAsync: rent, isLoading } = useContractWrite(contract, "rent");
+  
   const price = WeiToETH(data?.price);
   const deposit = WeiToETH(data?.deposit);
   const total = WeiToETH(data?.price.add(data?.deposit));
 
   const ms = parseInt(data?.duration.toString());
   const days = msTodhm(ms);
+
+  const rentHandle = (listingId) => {
+    const call = async () => {
+      try {
+        const data = await rent({ args: [listingId] });
+        console.info("contract call successs", data);
+        confirm("Rent Success");
+        window.location.reload();
+      } catch (err) {
+        alert("contract call failure",err)
+        console.error("contract call failure", err);
+      }
+    }
+    call();
+  }
 
   return (
     <Modal open={open} onClose={() => {}}>
@@ -58,8 +77,8 @@ function DetailModal({ open, onClose, data }) {
             }}
             alt="Picture of the Items"
           />
-          <Stack flexGrow={1} flex={1} pt={1}>
-            <Typography variant="body1" px={3}>
+          <Stack flexGrow={1} flex={1} pt={1} width={"580px"}>
+            <Typography variant="body1" px={3} sx={{ wordBreak: "break-word" }}>
               {data?.itemDescription}
             </Typography>
           </Stack>
@@ -118,7 +137,9 @@ function DetailModal({ open, onClose, data }) {
                   // ... etc
                 },
               })}
-              action={(contract) => console.log("rent")} // Logic to execute when clicked
+              action={(contract) => {
+                rentHandle(data?.listingId)
+              }} // Logic to execute when clicked
               style={{ color: COLORS.white, background: COLORS.purple }}
             >
               Rent
