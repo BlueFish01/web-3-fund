@@ -177,28 +177,28 @@ contract RentingContract {
 
     //--------------------------> GetFunction <---------------------------------//
 
-    function getUserBalance() public view returns(uint256){
-        return users[msg.sender].balance;
+    function getUserBalance(address _address) public view returns(uint256){
+        return users[_address].balance;
     }
 
-    function getUser() public view returns(User memory){
-        return users[msg.sender];
+    function getUser(address _address) public view returns(User memory){
+        return users[_address];
     }
 
-    function getCurrentRenting() public view returns(Listing[] memory){
-        uint256 length = users[msg.sender].renting.length;
+    function getCurrentRenting(address _address) public view returns(Listing[] memory){
+        uint256 length = users[ _address].renting.length;
         Listing[] memory Listings = new Listing[](length);
         for (uint256 i = 0; i < length; i++) {
-            Listings[i] = listings[users[msg.sender].renting[i]];
+            Listings[i] = listings[users[ _address].renting[i]];
         }
         return Listings;
     }
 
-    function getUserListing() public view returns(Listing[] memory){
-        uint256 length = users[msg.sender].UserListing.length;
+    function getUserListing(address _address) public view returns(Listing[] memory){
+        uint256 length = users[_address].UserListing.length;
         Listing[] memory Listings = new Listing[](length);
         for (uint256 i = 0; i < length; i++) {
-            Listings[i] = listings[users[msg.sender].UserListing[i]];
+            Listings[i] = listings[users[_address].UserListing[i]];
         }
         return Listings;
     }
@@ -211,14 +211,14 @@ contract RentingContract {
 
         uint256 length = numberOfListing;
         Listing[] memory Listings = new Listing[](length);
-        uint256 count = 0;
         for (uint256 i = 0; i < length; i++) {
-            if(listings[i].isActive && !listings[i].isRented && !listings[i].isReturning && !listings[i].isDeleted){
-                Listings[count] = listings[i];
-                count++;
-            }
+            Listings[i] = listings[i];
         }
         return Listings;
+    }
+
+    function getCurrentBlockTimeStamp() public view returns(uint256){
+        return block.timestamp;
     }
 
 }
