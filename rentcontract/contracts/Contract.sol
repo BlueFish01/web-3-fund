@@ -171,8 +171,12 @@ contract RentingContract {
         require(listings[_listingId].endDate < block.timestamp, "Only expired renting contract can be reported");
         require(listings[_listingId].isReturning == false, "Only non-returned item can be reported");
 
+        listings[_listingId].isRented = false;
+        listings[_listingId].isActive = false;
+        listings[_listingId].isDeleted = true;
         users[msg.sender].balance += listings[_listingId].deposit + listings[_listingId].price;
-        deactivateListing(_listingId);
+        users[msg.sender].balance += uint(listings[_listingId].deposit)/2;
+        users[msg.sender].hold -= uint(listings[_listingId].deposit)/2;
     }
 
     //--------------------------> GetFunction <---------------------------------//
@@ -216,10 +220,5 @@ contract RentingContract {
         }
         return Listings;
     }
-
-    function getCurrentBlockTimeStamp() public view returns(uint256){
-        return block.timestamp;
-    }
-
 }
 
