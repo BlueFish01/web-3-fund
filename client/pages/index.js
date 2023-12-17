@@ -4,6 +4,7 @@ import DetailModal from "../components/DetailModal";
 import { useEffect, useMemo, useState } from "react";
 import { useContract, useContractRead } from "@thirdweb-dev/react";
 
+
 function Homepage() {
   const [openModal, setOpenModal] = useState(false);
   const [detailData, setDetailData] = useState(null);
@@ -17,10 +18,6 @@ function Homepage() {
     []
   );
 
-  useEffect(() => {
-    console.log("data", data);
-  }, [data]);
-
   const listing = useMemo(() => {
     if(data?.length==0){
       return (
@@ -29,11 +26,18 @@ function Homepage() {
       </Grid>
       )
     }
-    return data?.map((item, key) => (
-      <Grid item xs={4} key={key} >
-        <ItemCard key={key} data={item} onClick={() => handleDetail(key)} />
-      </Grid>
-    ));
+    return data?.map((item, key) => {
+      if (item.isRented == false && item.isActive == true && item.isDeleted == false) {
+        return (
+          <Grid item xs={4} key={key} >
+            <ItemCard key={key} data={item} onClick={() => handleDetail(key)} />
+          </Grid>
+        )
+      }else{
+        return null;
+      }
+      
+    });
   }, [data, setOpenModal]);
 
   const handleDetail = (key) => {
@@ -49,6 +53,7 @@ function Homepage() {
         </Grid>
       }
       {detailData ? (
+        <>
         <DetailModal
           open={openModal}
           data={detailData}
@@ -56,9 +61,12 @@ function Homepage() {
             setOpenModal(false);
           }}
         />
+        
+        </>
       ) : (
         <></>
       )}
+      
     </Box>
   );
 }

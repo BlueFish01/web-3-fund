@@ -1,6 +1,6 @@
 import { Box, Typography, Button, Stack, CardActionArea, Card} from "@mui/material";
 import Image from 'next/image';
-import { WeiToETH, truncate, msToday } from '../utils'
+import { WeiToETH, truncate, secToday } from '../utils'
 
 function ItemCard({
     onClick,
@@ -9,7 +9,7 @@ function ItemCard({
 
   const price = WeiToETH(data?.price)
   const ms = parseInt(data?.duration.toString())
-  const days = msToday(ms)
+  const days = secToday(ms)
   return (
     
     <CardActionArea 

@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ProfileItemCard from "./ProfileItemCard";
 import { useAddress } from "@thirdweb-dev/react";
-import { WeiToETH } from '../utils'
+import { WeiToETH, computeAvgScore } from '../utils'
 import { useMemo, useState} from 'react'
 import AddListingModal from "./AddListingModal";
 
@@ -20,7 +20,9 @@ function Profile({
   const address = useAddress();
   const balance = WeiToETH(data?.balance);
   const hold = WeiToETH(data?.hold);
+  console.log(data)
   const [openCreateListing,setOpenCreatelisting] = useState(false)
+  
 
   let listingCount = 0;
   let ReportListingCount = 0;
@@ -28,6 +30,7 @@ function Profile({
 
   const listings = useMemo(() => {
     if (listing) {
+      console.log(listing)
       return listing.map((item) => {
         if(item.isDeleted) return null;
         else{
@@ -35,6 +38,7 @@ function Profile({
           return(
             <Grid key={item.listingId} item xs={6}>
               <ProfileItemCard 
+                id={item.listingId}
                 name={item.itemName}
                 isActive={item.isActive}
                 isRented={item.isRented}
@@ -56,6 +60,7 @@ function Profile({
           return(
             <Grid key={item.listingId} item xs={6}>
               <ProfileItemCard 
+                id={item.listingId}
                 name={item.itemName}
                 isActive={item.isActive}
                 isRented={item.isRented}
@@ -73,18 +78,23 @@ function Profile({
   const BorrowListing = useMemo(()=>{
     if(borrowing){
       return borrowing.map((item)=>{
-          return(
-            <Grid key={item.listingId} item xs={6}>
-              <ProfileItemCard 
-                name={item.itemName}
-                isActive={item.isActive}
-                isRented={item.isRented}
-                isReturning={item.isReturning}
-                borrow={true}
-                endDate={item.endDate}
-              />
-            </Grid>
-          )
+          if(item.isDeleted){
+            return null;
+          }else{
+            return(
+              <Grid key={item.listingId} item xs={6}>
+                <ProfileItemCard 
+                  id={item.listingId}
+                  name={item.itemName}
+                  isActive={item.isActive}
+                  isRented={item.isRented}
+                  isReturning={item.isReturning}
+                  borrow={true}
+                  endDate={item.endDate}
+                />
+              </Grid>
+            )
+          }
       })
     }
   },[borrowing])
@@ -114,7 +124,7 @@ function Profile({
               {data?.name || "unknown"}
             </Typography>
             <Typography fontSize={"20px"} fontWeight={400}>
-              Score : {data?.scores.length}
+              Score : {data ? computeAvgScore(data?.scores) : 'x'}
             </Typography>
             <Stack direction={"row"} justifyContent={"space-around"}>
               <FontAwesomeIcon
@@ -200,17 +210,17 @@ function Profile({
             {BorrowListing}
           </Grid>
           <Typography fontSize={"24px"} color={COLORS.white}>
-            Reported
-          </Typography>
-          <Grid container spacing={2} p={2} minHeight={"50px"}>
-            {reportedListing}
-          </Grid>
-          <Typography fontSize={"24px"} color={COLORS.white}>
             Listings ({listingCount})
           </Typography>
           <Grid container spacing={2} p={2} minHeight={"50px"}>
             {listings}
           </Grid>
+          {/* <Typography fontSize={"24px"} color={COLORS.white}>
+            Report
+          </Typography>
+          <Grid container spacing={2} p={2} minHeight={"50px"}>
+            {reportedListing}
+          </Grid> */}
         </Box>
       </Stack>
       <AddListingModal

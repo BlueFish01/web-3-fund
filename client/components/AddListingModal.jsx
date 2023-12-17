@@ -90,7 +90,7 @@ function AddListingModal({ open, onClose }) {
             <TextField
               {...register("_duration", { required: true })}
               type="number"
-              label="Duration (ms)"
+              label="Duration (Sec)"
               variant="outlined"
               required
             />

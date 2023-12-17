@@ -16,8 +16,12 @@ import {
     faMoneyBillTransfer,
 } from "@fortawesome/free-solid-svg-icons";
 import {dayLeft} from "../utils"
+import ReviewModel from "./ReviewModel";
+import { useState } from "react";
+import { useContract, useContractWrite } from "@thirdweb-dev/react";
 
 function ProfileItemCard({
+    id,
     name,
     isActive,
     isRented,
@@ -26,6 +30,14 @@ function ProfileItemCard({
     endDate,
 }){
     //let status = props.itemStatus
+    const [openReview,setOpenReview] = useState(false);
+
+    const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS);
+    const { mutateAsync: receivedItem, isLoading:recivedLoading } = useContractWrite(contract, "receivedItem");
+    const { mutateAsync: deleteListing, isLoading:deleteLoading } = useContractWrite(contract, "deleteListing");
+    const { mutateAsync: deactivateListing, isLoading:deactivateLoading } = useContractWrite(contract, "deactivateListing");
+    const { mutateAsync: reportNotReturnItem, isLoading:reportLoading } = useContractWrite(contract, "reportNotReturnItem")
+
     let status = '';
     if(isActive && !isRented && !isReturning){
         status = "active"
@@ -46,12 +58,12 @@ function ProfileItemCard({
 
     const cardStatus = {
         "borrow" : {
-            status: endDate ? dayLeft(endDate) : '',
+            status: isReturning ? "returning" : endDate ? dayLeft(endDate) : '',
             key: 1,
-            icon: faArrowRightArrowLeft,
+            icon: isReturning ? null : faArrowRightArrowLeft,
             iconColor: "white",
-            textColor: "#D85A5A",
-            onClickFn : ()=>{console.log("return")},
+            textColor: isReturning ? "#93CFC6" : "#D85A5A",
+            onClickFn : ()=>{setOpenReview(true)},
         },
         "report" : {
             key: 2,
@@ -65,30 +77,93 @@ function ProfileItemCard({
             icon: faStopCircle,
             iconColor: "#C85A5A",
             textColor: "#93CFC6",
-            onClickFn : ()=>{console.log("deactivate")},
+            onClickFn : ()=>{handleDeactivate()},
         },
         "inactive": {
             status: "inactive",
             key: 4,
             icon: faTrash,
             iconColor: "white",
-            textColor: "#9F9F9F"
+            textColor: "#9F9F9F",
+            onClickFn : ()=>{handleDelete()},
         },
         "rented":{
             status: "rented",
             key: 4,
-            icon: null,
-            iconColor: "white",
-            textColor: "#93CFC6"
+            icon: faExclamationCircle,
+            iconColor: "#C85A5A",
+            textColor: "#93CFC6",
+            onClickFn : ()=>{handleReport()},
         },
         "returned":{
             status: "returned",
             key: 4,
             icon: faMoneyBillTransfer,
             iconColor: "white",
-            textColor: "#93CFC6"
+            textColor: "#93CFC6",
+            onClickFn : ()=>{handleRecived()},
         }
     }
+
+    const handleRecived = () => {
+        const call = async () => {
+            try {
+                const data = await receivedItem({ args: [id] });
+                console.info("contract call successs", data);
+                confirm("Recieved Success");
+                window.location.reload();
+            } catch (err) {
+                alert(err);
+                console.error("contract call failure", err);
+            }
+        }
+        call();
+    }
+
+    const handleDelete = () => {
+        const call = async () => {
+            try{
+                const data = await deleteListing({ args : [id]});
+                console.info("contract call successs", data);
+                confirm("Delete success");
+                window.location.reload();
+            }catch (err) {
+                alert(err);
+                console.error("contract call failure", err)
+            }
+        }
+        call();
+    }
+
+    const handleDeactivate = () => {
+        const call = async () => {
+            try{
+                const data = await deactivateListing({ args : [id]});
+                console.info("contract call successs", data);
+                confirm("Deactivate success");
+                window.location.reload();
+            }catch (err) {
+                alert(err);
+                console.error("contract call failure", err)
+            }
+        }
+        call();
+    }
+
+    const handleReport = () => {
+        const call = async () => {
+            try{
+                const data = await reportNotReturnItem({ args : [id]})
+                console.info("contract call successs", data);
+                confirm("report success");
+                window.location.reload();
+            }catch (err) {
+                alert(err);
+                console.error("contract call failure", err)
+            }
+        }
+        call();
+    };
 
     return (
         <Box
@@ -110,23 +185,21 @@ function ProfileItemCard({
                         {cardStatus[status]?.status}
                     </Typography>
                 </Stack>
-                {status === 'returned' ? 
-                <IconButton>
-                    <FontAwesomeIcon 
-                        icon={faStopCircle} size={"lg"} color={"#C85A5A"}
-                    />
-                </IconButton>
-                :null
-                }
                 <IconButton
                     onClick={cardStatus[status]?.onClickFn}
+                    disabled={borrow && isReturning}
                 >
                     <FontAwesomeIcon 
                         icon={cardStatus[status]?.icon} size={"lg"} color={cardStatus[status]?.iconColor}
                     />
                 </IconButton>
-                
+                <ReviewModel 
+                    open={openReview} 
+                    onClose={()=>{setOpenReview(false)}}
+                    id={id}
+                />
         </Box>
+        
     )
 }
 

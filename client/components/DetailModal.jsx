@@ -13,7 +13,8 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { WeiToETH, msTodhm } from "../utils";
 import { Web3Button, darkTheme, useContract, useContractWrite } from "@thirdweb-dev/react";
 import { COLORS } from "./color";
-
+import { useState } from "react";
+import ShowReview from "../components/ShowReview";
 
 const style = {
   position: "absolute",
@@ -30,7 +31,7 @@ const style = {
 
 function DetailModal({ open, onClose, data }) {
   const { contract } = useContract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS);
-    const { mutateAsync: rent, isLoading } = useContractWrite(contract, "rent");
+  const { mutateAsync: rent, isLoading } = useContractWrite(contract, "rent");
   
   const price = WeiToETH(data?.price);
   const deposit = WeiToETH(data?.deposit);
@@ -38,6 +39,8 @@ function DetailModal({ open, onClose, data }) {
 
   const ms = parseInt(data?.duration.toString());
   const days = msTodhm(ms);
+
+  const [openReview, setOpenReview] = useState(false);
 
   const rentHandle = (listingId) => {
     const call = async () => {
@@ -55,6 +58,7 @@ function DetailModal({ open, onClose, data }) {
   }
 
   return (
+    <>
     <Modal open={open} onClose={() => {}}>
       <Box
         bgcolor={"white"}
@@ -85,9 +89,9 @@ function DetailModal({ open, onClose, data }) {
           <Typography variant="subtitle" px={3} gutterBottom>
             History : {data?.history.length}
           </Typography>
-          <Typography variant="subtitle" px={3}>
+          <Button sx={{ mx: "16px"}} onClick={()=>{setOpenReview(true)}}>
             owner : {data?.owner}
-          </Typography>
+          </Button>
         </Stack>
         <Divider orientation="vertical" flexItem bgcolor={"black"} />
         <Stack
@@ -112,15 +116,14 @@ function DetailModal({ open, onClose, data }) {
           </IconButton>
           <Stack direction={"column"} spacing={2} px={1}>
             <Stack direction={"row"} justifyContent={"space-between"}>
-              <Typography variant="h5">price</Typography>
-              <Stack direction={"column"} spacing={1} alignItems={"flex-end"}>
+                <Typography variant="h5">price</Typography>
                 <Typography variant="h5">{price} ETH</Typography>
-                <Typography variant="subtitle">{days}</Typography>
-              </Stack>
             </Stack>
-            <Stack direction={"row"} justifyContent={"space-between"}>
+            
+            <Typography variant="subtitle">{days}</Typography>
+            <Stack direction={"row"} justifyContent={"space-between"} flexGrow={1}>
               <Typography variant="h5">deposit</Typography>
-              <Typography variant="h5">{deposit} ETH</Typography>
+              <Typography variant="h5" textAlign={'right'}>{deposit} ETH</Typography>
             </Stack>
             <Divider />
             <Stack direction={"row"} justifyContent={"space-between"}>
@@ -148,6 +151,12 @@ function DetailModal({ open, onClose, data }) {
         </Stack>
       </Box>
     </Modal>
+    <ShowReview 
+    open={openReview} 
+    onClose={()=>{setOpenReview(false)}}
+    id={data.owner}
+    />
+    </>
   );
 }
 

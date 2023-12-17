@@ -9,8 +9,8 @@ export const truncate = (str, n) => {
     return (str.length > n) ? str.slice(0, n-1) + '...' : str;
 };
 
-export const msToday = (time)=>{
-    const SEC = 1e3;
+export const secToday = (time)=>{
+    const SEC = 1;
     const MIN = SEC * 60;
     const HOUR = MIN * 60;
     const DAY = HOUR * 24;
@@ -22,7 +22,7 @@ export const msToday = (time)=>{
 
 
 export const msTodhm = (time) => {
-    const SEC = ethers.BigNumber.from(1000);
+    const SEC = ethers.BigNumber.from(1);
     const MIN = SEC.mul(60);
     const HOUR = MIN.mul(60);
     const DAY = HOUR.mul(24);
@@ -33,17 +33,22 @@ export const msTodhm = (time) => {
     const m = ms.mod(HOUR).div(MIN);
     const s = ms.mod(MIN).div(SEC);
 
-    return `${d} Day(s) ${h} Hour(s) ${m} Minute(s) ${s} Second(s)`;
+    return `${d} Day(s) ${h} Hour(s) ${m} Minute(s)`;
 };
 
 export const dayLeft = (endDate) => {
     const endData = endDate;
     const now = ethers.BigNumber.from(Date.now());
     const remainTime = endData.sub(now.div(1000));
-
-    console.log('remainTime:', remainTime.toString());
     const dayleft = msTodhm(remainTime);
-    console.log('dayleft:', dayleft);
-
     return dayleft;
 };
+
+export const computeAvgScore = (scoreArray) => {
+    let sumScore = 0;
+    for(let i=0; i<scoreArray.length; i++){
+        sumScore += scoreArray[i].toNumber();
+    }
+    const avgScore = (sumScore / scoreArray.length).toFixed(2);
+    return avgScore;
+}
