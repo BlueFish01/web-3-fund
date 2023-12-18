@@ -56,7 +56,7 @@ contract RentingContract {
         string memory _itemDescription, 
         string memory _itemPic
         ) public returns(uint256) {
-        require(users[msg.sender].balance>_deposit/2,"Insufficient funds");
+        require(users[msg.sender].balance>uint(_deposit)/2,"Insufficient funds");
         Listing storage listing = listings[numberOfListing];
 
         listing.listingId = numberOfListing;
@@ -76,8 +76,8 @@ contract RentingContract {
         listing.isDeleted = false;
 
         numberOfListing++;
-        users[msg.sender].balance -= _deposit/2;
-        users[msg.sender].hold += _deposit/2;
+        users[msg.sender].balance -= uint(_deposit)/2;
+        users[msg.sender].hold += uint(_deposit)/2;
 
         users[msg.sender].UserListing.push(numberOfListing - 1);
 
@@ -103,8 +103,8 @@ contract RentingContract {
         require(!listings[_listingId].isRented, "The Item is already rented");
         require(listings[_listingId].endDate >= block.timestamp - 604800, "The Item must be inactivate for more than 1 week");
         listings[_listingId].isDeleted = true;
-        users[msg.sender].balance += listings[_listingId].deposit/2;
-        users[msg.sender].hold -= listings[_listingId].deposit/2;
+        users[msg.sender].balance += uint(listings[_listingId].deposit)/2;
+        users[msg.sender].hold -= uint(listings[_listingId].deposit)/2;
     }
 
     function deactivateListing(uint256 _listingId) public {
@@ -171,34 +171,38 @@ contract RentingContract {
         require(listings[_listingId].endDate < block.timestamp, "Only expired renting contract can be reported");
         require(listings[_listingId].isReturning == false, "Only non-returned item can be reported");
 
+        listings[_listingId].isRented = false;
+        listings[_listingId].isActive = false;
+        listings[_listingId].isDeleted = true;
         users[msg.sender].balance += listings[_listingId].deposit + listings[_listingId].price;
-        deactivateListing(_listingId);
+        users[msg.sender].balance += uint(listings[_listingId].deposit)/2;
+        users[msg.sender].hold -= uint(listings[_listingId].deposit)/2;
     }
 
     //--------------------------> GetFunction <---------------------------------//
 
-    function getUserBalance() public view returns(uint256){
-        return users[msg.sender].balance;
+    function getUserBalance(address _address) public view returns(uint256){
+        return users[_address].balance;
     }
 
-    function getUser() public view returns(User memory){
-        return users[msg.sender];
+    function getUser(address _address) public view returns(User memory){
+        return users[_address];
     }
 
-    function getCurrentRenting() public view returns(Listing[] memory){
-        uint256 length = users[msg.sender].renting.length;
+    function getCurrentRenting(address _address) public view returns(Listing[] memory){
+        uint256 length = users[ _address].renting.length;
         Listing[] memory Listings = new Listing[](length);
         for (uint256 i = 0; i < length; i++) {
-            Listings[i] = listings[users[msg.sender].renting[i]];
+            Listings[i] = listings[users[ _address].renting[i]];
         }
         return Listings;
     }
 
-    function getUserListing() public view returns(Listing[] memory){
-        uint256 length = users[msg.sender].UserListing.length;
+    function getUserListing(address _address) public view returns(Listing[] memory){
+        uint256 length = users[_address].UserListing.length;
         Listing[] memory Listings = new Listing[](length);
         for (uint256 i = 0; i < length; i++) {
-            Listings[i] = listings[users[msg.sender].UserListing[i]];
+            Listings[i] = listings[users[_address].UserListing[i]];
         }
         return Listings;
     }
@@ -211,15 +215,10 @@ contract RentingContract {
 
         uint256 length = numberOfListing;
         Listing[] memory Listings = new Listing[](length);
-        uint256 count = 0;
         for (uint256 i = 0; i < length; i++) {
-            if(listings[i].isActive && !listings[i].isRented && !listings[i].isReturning && !listings[i].isDeleted){
-                Listings[count] = listings[i];
-                count++;
-            }
+            Listings[i] = listings[i];
         }
         return Listings;
     }
-
 }
 

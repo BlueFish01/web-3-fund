@@ -1,5 +1,13 @@
 # web3-P2P rental platform
 
+## run local Blockchaibn network
+
+`$ npx hardhat node --network hardhat`
+
+## Deploy smart contract
+
+`$ npx thirdweb deploy`
+
 ## how to run project (Frontend)
 
 from root

@@ -1,13 +1,23 @@
 import { Box, Typography, Button, Stack, CardActionArea, Card} from "@mui/material";
-import Image from 'next/image'
+import Image from 'next/image';
+import { WeiToETH, truncate, secToday } from '../utils'
 
 function ItemCard({
     onClick,
+    data,
 }) {
+
+  const price = WeiToETH(data?.price)
+  const ms = parseInt(data?.duration.toString())
+  const days = secToday(ms)
   return (
     
     <CardActionArea 
-        sx={{borderRadius: '15px'}}
+        sx={{
+        borderRadius: '15px',
+        width:"320px",
+        height:"360px"
+        }}
         onClick={onClick}
     >
     <Box
@@ -27,10 +37,11 @@ function ItemCard({
         display={'flex'}
         justifyContent={'space-between'}
         spacing={1}
+        pt={1}
         >
             <Stack>
             <Image
-                src="https://media-cdn.bnn.in.th/150987/MacBook_Pro_16-in_Space_Grey_PDP_Image_Position-1__TH-square_medium.jpg"
+                src={data?.itemPic}
                 width={320}
                 height={215}
                 style={{
@@ -39,12 +50,12 @@ function ItemCard({
                 alt="Picture of the Items"
             />
             <Typography px={2} color={"black"} variant={"h5"}>
-                Macbook Pro 16"
+                {data?.itemName}
             </Typography>
             </Stack>
             <Stack spacing={1}>
             <Typography px={2} color={"purple"} variant={"h5"}>
-                1.5 ETH
+                {price} ETH
             </Typography>
             <Stack 
             direction={"row"} 
@@ -54,10 +65,11 @@ function ItemCard({
             px={2}
             >
                 <Typography  color={"black"} variant={"caption"}>
-                    10 days
+                    {days}
                 </Typography>
                 <Typography  color={"black"} variant={"caption"}>
-                    x0034r54354657788
+                    {/* {data?.owner} */}
+                    {data ? truncate(data?.owner,20):""}
                 </Typography>
             </Stack>
             </Stack>

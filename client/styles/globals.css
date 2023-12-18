@@ -9,8 +9,11 @@ body {
 }
 
 a {
-  color: #84309c;
   text-decoration: none;
+}
+
+a:-webkit-any-link {
+  color: #ffffff !important;
 }
 
 * {
