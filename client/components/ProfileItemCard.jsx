@@ -178,7 +178,7 @@ function ProfileItemCard({
             pr={1}
         >
                 <Stack width={"90%"}>
-                    <Typography px={1} pt={1} color={"white"} variant={"h6"}>
+                    <Typography fontSize={16} px={1} pt={1} color={"white"} variant={"h6"}>
                         {name}
                     </Typography>
                     <Typography px={1} pb={1} fontSize={borrow ? "14px" : "18px"} color={cardStatus[status]?.textColor} variant={"h6"}>
